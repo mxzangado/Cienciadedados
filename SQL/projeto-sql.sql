@@ -1,5 +1,9 @@
 -- Criando banco
-create database if not exists vendas_dimensional;
+create database if not exists vendas_dimensional
+default charset = utf8mb4  -- Define o padrão de codificação de caracteres especiais .
+default collate utf8_general_ci; -- Define as regras de comparação e ordenação ex:A ==, a Dado < João
+
+
 use vendas_dimensional;
 
 ----------------------------------------------------
@@ -7,19 +11,19 @@ use vendas_dimensional;
 ----------------------------------------------------
 
 create table dim_fornecedor (
-	id bigint primary key comment 'Identificador do fornecedor',
+	id bigint auto_increment primary key not null comment 'Identificador do fornecedor',
 	fornecedor varchar(200) not null comment 'Nome da empresa',
 	contato varchar(200) not null comment 'Telefone/Contato do fornecedor'
 );
 
 create table dim_transportadora (
-	id bigint primary key comment 'Identificador da transportadora',
+	id bigint auto_increment primary key not null comment 'Identificador da transportadora',
 	transportadora varchar(200) not null comment 'Nome da transportadora',
 	contato varchar(200) not null comment 'Contato da transportadora'
 );
 
 create table dim_vendedor (
-	id bigint primary key comment 'Identificador único do vendedor',
+	id bigint auto_increment primary key not null comment 'Identificador único do vendedor',
 	nome varchar(200) not null comment 'Nome do vendedor',
 	sexo_codigo char(1) comment 'M/F/N',
 	sexo_descricao varchar(400) comment 'Descrição do sexo',
@@ -29,40 +33,40 @@ create table dim_vendedor (
 );
 
 create table dim_produto (
-	id bigint primary key comment 'Identificador único do produto',
+	id bigint auto_increment primary key not null comment 'Identificador único do produto',
 	produto varchar(200) comment 'Nome do produto',
 	preco_unitario float,
 	descontinuado tinyint
 );
 
 create table dim_categoria (
-	id bigint primary key comment 'Identificador da categoria',
+	id bigint auto_increment primary key not null comment 'Identificador da categoria',
 	categoria varchar(200) comment 'Nome da categoria'
 );
 
 create table dim_pais (
-	id bigint primary key comment 'Identificador único do país',
+	id bigint auto_increment primary key not null comment'Identificador único do país',
 	sigla char(2) not null,
 	pais varchar(100) not null
 );
 
 create table dim_cliente (
-	id bigint primary key comment 'Identificador do cliente',
-	nome_cliente varchar(200) not null,
-	sexo_codigo char(1),
+	id bigint auto_increment primary key not null  comment'Identificador do cliente',
+	nome_cliente varchar(200) not null comment 'Não pode ficar vazio',
+	sexo_codigo enum('M','F') comment'Só aceita M ou F',
 	sexo_descricao varchar(45),
 	profissao varchar(200) not null,
 	email varchar(400) not null,
-	proverdor_do_cliente varchar(45) not null,
+	provedor_do_cliente varchar(45) not null,
 	nascimento date not null,
 	cadastro date,
 	endereco_completo varchar(450),
 	cod_nacionalidade varchar(45),
 	nacionalidade varchar(45)
-);
+)default charset = utf8mb4;
 
 create table dim_tempo (
-	id bigint primary key comment 'Identificador único da linha do tempo',
+	id bigint auto_increment primary key not null comment 'Identificador único da linha do tempo',
 	data date,
 	dia int not null,
 	ano int not null,
@@ -86,12 +90,12 @@ create table dim_tempo (
 ----------------------------------------------------
 
 create table fat_item (
-	id bigint primary key comment 'Identificador da venda',
+	id bigint auto_increment primary key not null comment 'Identificador da venda',
 	qtd_vendida int not null comment 'Quantidade vendida',
-	preco_unitario_na_venda float not null comment 'Preço unitário na venda',
-	valor_frete float default 0 comment 'Valor do frete',
-	valor_desconto float default 0 comment 'Valor do desconto',
-	valor_comissao float default 0 comment 'Valor de comissão',
+	preco_unitario_na_venda decimal(10,2) not null comment 'Preço unitário na venda',
+	valor_frete decimal(10,2) default 0 comment 'Valor do frete',
+	valor_desconto decimal(10,2) default 0 comment 'Valor do desconto',
+	valor_comissao decimal(10,2) default 0 comment 'Valor de comissão',
 
 	tempo_pedido bigint not null,
 	tempo_de_pagamento bigint,
